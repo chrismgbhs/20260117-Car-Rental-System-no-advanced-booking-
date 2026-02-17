@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -53,83 +54,170 @@ namespace _20260117_Car_Rental_System
 
         public static void MainMenu()
         {
-            int choice = 0;
-            while (choice != 10)
+            string username = "";
+            string pin = "";
+            string role = "";
+
+            while (true)
             {
-                Console.Clear();
-                Console.WriteLine("DO NOT CLOSE THE CONSOLE, INSTEAD JUST PLEASE SAVE AND EXIT.");
-                Console.WriteLine("Main Menu:");
-                Console.WriteLine("1. View Available Cars");
-                Console.WriteLine("2. Rent a Car");
-                Console.WriteLine("3. View Rented Cars");
-                Console.WriteLine("4. Return a Car");
-                Console.WriteLine("5. Send Car to Maintenance or Return Car from Maintenance");
-                Console.WriteLine("6. View Cars in Maintenance");
-                Console.WriteLine("7. View Mainthenance History");
-                Console.WriteLine("8. Add a Car");
-                Console.WriteLine("9. Add Multiple Cars via CSV file");
-                Console.WriteLine("10. Exit and Save");
-                Console.WriteLine();
+                bool userFound = false;
+                Console.Write("Please enter your username: ");
+                username = Console.ReadLine().Trim();
+                Console.Write("Please enter your pin: ");
+                pin = Console.ReadLine().Trim();
 
-                while (true)
+                File_Manager file_Manager = new File_Manager("users.csv");
+                List<string> lines = file_Manager.getLines();
+                foreach (string line in lines)
                 {
-                    Console.Write("Select an option (1-10): ");
-                    int.TryParse(Console.ReadLine(), out choice);
-
-                    if (choice > 0 && choice < 11)
+                    Console.WriteLine(line);
+                    string[] userDetails = line.Trim().Split(',');
+                    if (userDetails[0] == username && userDetails[1] == pin)
                     {
+                        userFound = true;
+                        role = userDetails[2];
                         break;
-                    }
-
-                    else
-                    {
-                        Console.WriteLine("Invalid choice. Please select a valid option.");
                     }
                 }
 
-                switch (choice)
+                if (!userFound)
                 {
-                    case 1:
-                        ViewAvailableCars();
-                        ReturnToMainMenu();
-                        break;
-                    case 2:
-                        RentCar();
-                        ReturnToMainMenu();
-                        break;
-                    case 3:
-                        ViewRentedCars();
-                        ReturnToMainMenu();
-                        break;
-                    case 4:
-                        ReturnCar();
-                        ReturnToMainMenu();
-                        break;
-                    case 5:
-                        SendCarToMaintenanceOrReturnCarFromMaintenance();
-                        ReturnToMainMenu();
-                        break;
-                    case 6:
-                        ViewCarsInMaintenance();
-                        ReturnToMainMenu();
-                        break;
-                    case 7:
-                        ViewMaintenanceHistory();
-                        ReturnToMainMenu();
-                        break;
-                    case 8:
-                        AddCar();
-                        ReturnToMainMenu();
-                        break;
-                    case 9:
-                        AddCars();
-                        ReturnToMainMenu();
-                        break;
-                    case 10:
-                        ExitSystem();
-                        break;
+                    Console.WriteLine("User not found.");
+                }
+
+                else
+                {
+                    break;
                 }
             }
+            
+            if (role == "admin")
+            {
+                int choice = 0;
+                while (choice != 10)
+                {
+                    Console.Clear();
+                    Console.WriteLine("DO NOT CLOSE THE CONSOLE, INSTEAD JUST PLEASE SAVE AND EXIT.");
+                    Console.WriteLine("Main Menu:");
+                    Console.WriteLine("1. View Available Cars");
+                    Console.WriteLine("2. View Rented Cars");
+                    Console.WriteLine("3. Send Car to Maintenance or Return Car from Maintenance");
+                    Console.WriteLine("4. View Cars in Maintenance");
+                    Console.WriteLine("5. View Mainthenance History");
+                    Console.WriteLine("6. Add a Car");
+                    Console.WriteLine("7. Add Multiple Cars via CSV file");
+                    Console.WriteLine("8. Exit and Save");
+                    Console.WriteLine();
+
+                    while (true)
+                    {
+                        Console.Write("Select an option (1-10): ");
+                        int.TryParse(Console.ReadLine(), out choice);
+
+                        if (choice > 0 && choice < 11)
+                        {
+                            break;
+                        }
+
+                        else
+                        {
+                            Console.WriteLine("Invalid choice. Please select a valid option.");
+                        }
+                    }
+
+                    switch (choice)
+                    {
+                        case 1:
+                            ViewAvailableCars();
+                            ReturnToMainMenu();
+                            break;
+                        case 2:
+                            ViewRentedCars(username, role);
+                            ReturnToMainMenu();
+                            break;
+                        case 3:
+                            SendCarToMaintenanceOrReturnCarFromMaintenance();
+                            ReturnToMainMenu();
+                            break;
+                        case 4:
+                            ViewCarsInMaintenance();
+                            ReturnToMainMenu();
+                            break;
+                        case 5:
+                            ViewMaintenanceHistory();
+                            ReturnToMainMenu();
+                            break;
+                        case 6:
+                            AddCar();
+                            ReturnToMainMenu();
+                            break;
+                        case 7:
+                            AddCars();
+                            ReturnToMainMenu();
+                            break;
+                        case 8:
+                            ExitSystem();
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                int choice = 0;
+                while (choice != 5)
+                {
+                    Console.Clear();
+                    Console.WriteLine("DO NOT CLOSE THE CONSOLE, INSTEAD JUST PLEASE SAVE AND EXIT.");
+                    Console.WriteLine("Main Menu:");
+                    Console.WriteLine("1. View Available Cars");
+                    Console.WriteLine("2. View Rented Cars");
+                    Console.WriteLine("3. Rent a Car");
+                    Console.WriteLine("4. Return a Car");
+                    Console.WriteLine("5. Exit and Save");
+                    Console.WriteLine();
+
+                    while (true)
+                    {
+                        Console.Write("Select an option (1-5): ");
+                        int.TryParse(Console.ReadLine(), out choice);
+
+                        if (choice > 0 && choice < 6)
+                        {
+                            break;
+                        }
+
+                        else
+                        {
+                            Console.WriteLine("Invalid choice. Please select a valid option.");
+                        }
+                    }
+
+                    switch (choice)
+                    {
+                        case 1:
+                            ViewAvailableCars();
+                            ReturnToMainMenu();
+                            break;
+                        case 2:
+                            ViewRentedCars(username, role);
+                            ReturnToMainMenu();
+                            break;
+                        case 3:
+                            RentCar(username);
+                            ReturnToMainMenu();
+                            break;
+                        case 4:
+                            ReturnCar(username,role);
+                            ReturnToMainMenu();
+                            break;
+                        case 5:
+                            ExitSystem();
+                            break;
+                    }
+                }
+            }
+
+            
             
         }
 
@@ -210,7 +298,7 @@ namespace _20260117_Car_Rental_System
             }
         }
 
-        public static void ViewRentedCars()
+        public static void ViewRentedCars(string username, string role)
         {
             Console.Clear();
 
@@ -221,11 +309,24 @@ namespace _20260117_Car_Rental_System
             foreach (Borrowed_Car borrowed_car in Cars_Out.carsRented)
             {
                 counter++;
-                Console.WriteLine($"{counter}. {borrowed_car.StartDateTime} to {borrowed_car.EndDateTime}: {borrowed_car.Car.Name} - {borrowed_car.Car.Brand} - {borrowed_car.Car.Age} - {borrowed_car.Car.LicensePlate} | Borrower: {borrowed_car.BorrowerName}");
+
+                if (role == "admin")
+                {
+                    Console.WriteLine($"CODE: {counter} | {borrowed_car.StartDateTime} to {borrowed_car.EndDateTime}: {borrowed_car.Car.Name} - {borrowed_car.Car.Brand} - {borrowed_car.Car.Age} - {borrowed_car.Car.LicensePlate} | Borrower: {borrowed_car.BorrowerName}");
+                }
+
+                else
+                {
+                    if (borrowed_car.BorrowerName == username)
+                    {
+                        Console.WriteLine($"CODE: {counter} | {borrowed_car.StartDateTime} to {borrowed_car.EndDateTime}: {borrowed_car.Car.Name} - {borrowed_car.Car.Brand} - {borrowed_car.Car.Age} - {borrowed_car.Car.LicensePlate} | Borrower: {borrowed_car.BorrowerName}");
+                    }
+                }
+               
             }
         }
 
-        public static void RentCar()
+        public static void RentCar(string borrowerName)
         {
             int carNumber;
             int rentalYear;
@@ -253,9 +354,7 @@ namespace _20260117_Car_Rental_System
                      Console.WriteLine("Invalid car number.");
                 }     
             }
-            
-            Console.Write("Enter your name: ");
-            string borrowerName = Console.ReadLine();
+           
 
             while (true)
             {
@@ -411,13 +510,13 @@ namespace _20260117_Car_Rental_System
             Console.WriteLine("Receipt has been printed.");
         }
 
-        public static void ReturnCar()
+        public static void ReturnCar(string username, string role)
         {
             int carNumber;
-            ViewRentedCars();
+            ViewRentedCars(username, role);
             while(true)
             {
-                Console.Write("Enter the number of the car you want to return: ");
+                Console.Write("Enter the code of the car you want to return: ");
                 int.TryParse(Console.ReadLine(), out carNumber);
 
                 if (carNumber > 0 && carNumber <= Cars_Out.carsRented.Count)
